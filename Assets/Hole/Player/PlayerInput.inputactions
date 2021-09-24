@@ -60,7 +60,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Bind",
+                    "name": "BindLimbs",
                     "type": "Value",
                     "id": "4b5991ab-b138-492f-9372-5d6550d0d61c",
                     "expectedControlType": "",
@@ -333,7 +333,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Bind",
+                    "action": "BindLimbs",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -344,7 +344,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Bind",
+                    "action": "BindLimbs",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -355,7 +355,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Bind",
+                    "action": "BindLimbs",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -366,7 +366,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Bind",
+                    "action": "BindLimbs",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

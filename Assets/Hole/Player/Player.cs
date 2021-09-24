@@ -8,12 +8,16 @@ public class Player: MonoBehaviour {
     /// the wall layer
     int sWallLayer = -1;
 
+    // -- config --
+    /// the input asset
+    [SerializeField] InputActionAsset mInputs;
+
     // -- nodes --
     /// the player's root transform
     Transform mRoot;
 
-    /// the custom player input
-    PlayerInput mInput;
+    /// the player's viewpoint
+    Transform mView;
 
     /// the player's physics body
     Rigidbody mBody;
@@ -23,9 +27,6 @@ public class Player: MonoBehaviour {
 
     /// the player controller
     GoldPlayerController mController;
-
-    /// the player's viewpoint
-    Transform mView;
 
     /// the player's left foot
     Limb mLeftFoot;
@@ -40,8 +41,8 @@ public class Player: MonoBehaviour {
     Limb mRightHand;
 
     // -- inputs --
-    /// the bind action
-    InputAction mBind;
+    /// the bind limbs action
+    InputAction mBindLimbs;
 
     // -- props --
     /// the limb being bound
@@ -55,23 +56,23 @@ public class Player: MonoBehaviour {
         // get node dependencies
         var t = transform;
         mRoot = t;
-        mInput = GetComponent<PlayerInput>();
+        mView = t.Find("Body/Head/View");
 
+        // get body
         var tb = t.Find("Body");
         mBody = tb.GetComponent<Rigidbody>();
         mCharacter = tb.GetComponent<CharacterController>();
         mController = tb.GetComponent<GoldPlayerController>();
 
-        mView = t.Find("Body/Head/View");
+        // get limbs
         mLeftHand = t.Find("Limbs/LeftHand").GetComponent<Limb>();
         mRightHand = t.Find("Limbs/RightHand").GetComponent<Limb>();
         mLeftFoot = t.Find("Limbs/LeftFoot").GetComponent<Limb>();
         mRightFoot = t.Find("Limbs/RightFoot").GetComponent<Limb>();
 
         // bind input events
-        var inputs = GetComponentInChildren<GoldPlayerInputSystem>().InputAsset;
-        mBind = inputs.FindAction("StartBind");
-        mBind.performed += OnBind;
+        mBindLimbs = mInputs.FindAction("BindLimbs");
+        mBindLimbs.performed += OnBindLimbs;
 
         // set statics
         if (sWallLayer == -1) {
@@ -80,7 +81,7 @@ public class Player: MonoBehaviour {
     }
 
     void OnEnable() {
-        mBind.Enable();
+        mBindLimbs.Enable();
     }
 
     void Start() {
@@ -115,7 +116,7 @@ public class Player: MonoBehaviour {
 
     // -- commands --
     /// try to bind inputs
-    void TryBind() {
+    void TryBindLimbs() {
         // cast for a wall
         var nHits = Physics.RaycastNonAlloc(
             mView.position,
@@ -125,21 +126,22 @@ public class Player: MonoBehaviour {
             1 << sWallLayer
         );
 
-        // climb if it hits
+        // bind limbs if it hits
         if (nHits != 0) {
-            StartBinding();
+            BindLimbs();
         }
     }
 
     /// start binding inputs for each limb
-    void StartBinding() {
+    void BindLimbs() {
         // disable bind input
-        mBind.Disable();
+        mBindLimbs.Disable();
 
         // begin binding limbs
         BindNextLimb();
     }
 
+    /// binds the next limb in the sequence
     void BindNextLimb() {
         // find a limb to bind, if any
         var limb = FindNextLimb();
@@ -178,7 +180,7 @@ public class Player: MonoBehaviour {
     }
 
     // -- events --
-    void OnBind(InputAction.CallbackContext ctx) {
-        TryBind();
+    void OnBindLimbs(InputAction.CallbackContext ctx) {
+        TryBindLimbs();
     }
 }

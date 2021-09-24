@@ -1,8 +1,5 @@
-using System;
-using Hertzole.GoldPlayer;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 /// one of the player's limbs
 public class Limb: MonoBehaviour {
@@ -18,6 +15,9 @@ public class Limb: MonoBehaviour {
     /// the name of the limb
     [SerializeField] Name mName;
 
+    /// the input asset
+    [SerializeField] InputActionAsset mInputs;
+
     // -- nodes --
     /// the input action for this limb
     InputAction mInput;
@@ -26,10 +26,9 @@ public class Limb: MonoBehaviour {
     Prompt mPrompt;
 
     // -- lifecycle --
-    void Start() {
+    void Awake() {
         // get node deps
-        var inputs = GetComponentInParent<GoldPlayerInputSystem>().InputAsset;
-        mInput = inputs.FindAction(FindActionName());
+        mInput = mInputs.FindAction(FindActionName());
         mPrompt = Prompt.Get;
     }
 
@@ -85,7 +84,7 @@ public class Limb: MonoBehaviour {
             Name.RightFoot => "hold the farthest key u can w/ ur thumb",
             Name.LeftHand => "hold the farthest key u can w/ ur ring finger",
             Name.RightHand => "hold the farthest key u can w/ ur index finger",
-            _ => null
+            _ => null,
         };
     }
 }
