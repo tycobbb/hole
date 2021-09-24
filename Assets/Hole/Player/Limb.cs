@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,10 @@ public class Limb: MonoBehaviour {
         RightHand,
     }
 
+    // -- deps --
+    /// the shared prompt ui
+    Prompt mPrompt;
+
     // -- config --
     /// the name of the limb
     [SerializeField] Name mName;
@@ -18,22 +23,38 @@ public class Limb: MonoBehaviour {
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
-    /// the shared prompt ui
-    Prompt mPrompt;
+    // -- c/nodes
+    /// the limb's rigidbody
+    [SerializeField] Rigidbody mBody;
 
     // -- props --
-    /// the input action for this limb
-    InputAction mInput;
+    /// if the grab has been used
+    bool mHasGrabbed;
+
+    /// the grab action for this limb
+    InputAction mGrab;
 
     // -- lifecycle --
     void Awake() {
-        // get node deps
+        // get deps
         mPrompt = Prompt.Get;
-        mInput = mInputs.FindAction(FindActionName());
+
+        // set props
+        mGrab = mInputs.FindAction(FindActionName());
+    }
+
+    void Update() {
+        // track first grab
+        if (!mHasGrabbed && mGrab.WasPressedThisFrame()) {
+            mHasGrabbed = true;
+        }
+
+        // keep the limb pinned if unbound or unpressed
+        mBody.isKinematic = IsPinned();
     }
 
     void OnDisable() {
-        mInput.Disable();
+        mGrab.Disable();
     }
 
     // -- props(hot) --
@@ -47,23 +68,30 @@ public class Limb: MonoBehaviour {
     /// show prompt and bind this limb's input
     public void Bind() {
         mPrompt.Show(FindPromptText());
-        mInput.Enable();
+
+        // enable the grab
+        mGrab.Enable();
     }
 
     // -- queries --
     /// if the limb was just pressed
     public bool IsJustPressed() {
-        return mInput.WasPerformedThisFrame();
+        return mGrab.WasPerformedThisFrame();
     }
 
     /// if the limb is pressed
     public bool IsPressed() {
-        return mInput.IsPressed();
+        return mGrab.IsPressed();
     }
 
     /// if the limb was just released
     public bool IsJustReleased() {
-        return mInput.WasReleasedThisFrame();
+        return mGrab.WasReleasedThisFrame();
+    }
+
+    /// if it's pinned in place
+    bool IsPinned() {
+        return !mHasGrabbed || mGrab.IsPressed();
     }
 
     /// find action name for this limb

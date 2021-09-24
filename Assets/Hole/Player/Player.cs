@@ -71,12 +71,16 @@ public class Player: MonoBehaviour {
         // if we bound the current limb, attach it
         var curr = FindCurrentLimb();
         if (curr != null && curr.IsJustPressed()) {
-            AttachCurrentLimb();
+            FinishBind();
         }
 
         // update every limb
         var nLimbsAttached = 0;
         foreach (var limb in mLimbs) {
+            if (limb.IsJustPressed()) {
+                TryGrab(limb);
+            }
+
             if (limb.IsPressed()) {
                 nLimbsAttached += 1;
             }
@@ -115,30 +119,6 @@ public class Player: MonoBehaviour {
         BindNextLimb();
     }
 
-    /// attach the current limb to the wall
-    void AttachCurrentLimb() {
-        var limb = FindCurrentLimb();
-
-        // cast for a wall
-        var nHits = Physics.RaycastNonAlloc(
-            limb.Position,
-            mRoot.forward,
-            mHits,
-            2.0f,
-            1 << sWallLayer
-        );
-
-        if (nHits == 0) {
-            return;
-        }
-
-        // attach to the wall
-        limb.Position = mHits[0].point;
-
-        // bind the next limb
-        BindNextLimb();
-    }
-
     /// binds the next limb in the sequence
     void BindNextLimb() {
         // update the index of the current limb
@@ -154,6 +134,40 @@ public class Player: MonoBehaviour {
         if (limb != null) {
             limb.Bind();
         }
+    }
+
+    /// grab the wall with the current limb and bind the next one
+    void FinishBind() {
+        var limb = FindCurrentLimb();
+
+        // grab the wall
+        var attached = TryGrab(limb);
+
+        // bind the next limb if successful
+        if (attached) {
+            BindNextLimb();
+        }
+    }
+
+    /// try to grab a wall with the limb
+    bool TryGrab(Limb limb) {
+        // cast for a wall
+        var nHits = Physics.RaycastNonAlloc(
+            limb.Position,
+            mRoot.forward,
+            mHits,
+            5.0f,
+            1 << sWallLayer
+        );
+
+        if (nHits == 0) {
+            return false;
+        }
+
+        // attach to the wall
+        limb.Position = mHits[0].point;
+
+        return true;
     }
 
     /// start climbing
