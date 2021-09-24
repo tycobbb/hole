@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using Hertzole.GoldPlayer;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
