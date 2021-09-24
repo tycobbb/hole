@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 2358443590312021537}
   - component: {fileID: 8759122752528276325}
   - component: {fileID: 2358443590312021543}
-  - component: {fileID: 904487455082882651}
+  - component: {fileID: 3795466425315165842}
   m_Layer: 3
   m_Name: Body
   m_TagString: Player
@@ -183,7 +183,7 @@ MonoBehaviour:
     input_MouseX: Mouse X
     input_MouseY: Mouse Y
   movement:
-    canMoveAround: 1
+    canMoveAround: 0
     unscaledTime: 0
     walkingSpeeds:
       forwardSpeed: 2
@@ -376,7 +376,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!54 &904487455082882651
+--- !u!54 &3795466425315165842
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388,7 +388,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

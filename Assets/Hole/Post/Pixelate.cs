@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-[ExecuteInEditMode]
+[ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 public class Pixelate: MonoBehaviour {
     // -- constants --

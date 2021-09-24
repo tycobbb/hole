@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 
+/// the text ui prompt
 public class Prompt: MonoBehaviour {
     // -- module --
     /// get the module
@@ -8,28 +9,29 @@ public class Prompt: MonoBehaviour {
         get => FindObjectOfType<Prompt>();
     }
 
-    // -- nodes --
-    TMP_Text mText;
+    // -- config --
+    /// the text label
+    [SerializeField] TMP_Text mLabel;
 
     // -- lifecycle --
     void Awake() {
-        // get node deps
-        mText = GetComponent<TMP_Text>();
+        // start hidden
+        Hide();
     }
 
-    // -- commands --
+    // -- props(hot) --
     /// set the text and show prompt if necessary
-    public void Set(string msg) {
-        mText.text = msg;
+    public void Show(string msg) {
+        mLabel.text = msg;
 
-        if (!mText.IsActive()) {
-            mText.SetActive(true);
+        if (!mLabel.IsActive()) {
+            mLabel.SetActive(true);
         }
     }
 
     /// hide the prompt
     public void Hide() {
-        mText.text = "";
-        mText.SetActive(false);
+        mLabel.text = "";
+        mLabel.SetActive(false);
     }
 }

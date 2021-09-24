@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 /// one of the player's limbs
 public class Limb: MonoBehaviour {
     // -- types --
-    public enum Name {
+    enum Name {
         LeftFoot,
         RightFoot,
         LeftHand,
@@ -18,18 +18,18 @@ public class Limb: MonoBehaviour {
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
-    // -- nodes --
-    /// the input action for this limb
-    InputAction mInput;
-
     /// the shared prompt ui
     Prompt mPrompt;
+
+    // -- props --
+    /// the input action for this limb
+    InputAction mInput;
 
     // -- lifecycle --
     void Awake() {
         // get node deps
-        mInput = mInputs.FindAction(FindActionName());
         mPrompt = Prompt.Get;
+        mInput = mInputs.FindAction(FindActionName());
     }
 
     void OnDisable() {
@@ -38,7 +38,7 @@ public class Limb: MonoBehaviour {
 
     // -- props(hot) --
     /// the limb's transform position
-    public Vector3 position {
+    public Vector3 Position {
         get => transform.position;
         set => transform.position = value;
     }
@@ -46,7 +46,7 @@ public class Limb: MonoBehaviour {
     // -- commands --
     /// show prompt and bind this limb's input
     public void Bind() {
-        mPrompt.Set(FindPromptText());
+        mPrompt.Show(FindPromptText());
         mInput.Enable();
     }
 
@@ -80,10 +80,10 @@ public class Limb: MonoBehaviour {
     /// find the prompt text for this limb
     string FindPromptText() {
         return (mName) switch {
-            Name.LeftFoot => "hold z w/ ur left pinky",
-            Name.RightFoot => "hold the farthest key u can w/ ur thumb",
-            Name.LeftHand => "hold the farthest key u can w/ ur ring finger",
+            Name.LeftHand => "hold 3 w/ ur ring finger",
             Name.RightHand => "hold the farthest key u can w/ ur index finger",
+            Name.LeftFoot => "hold the farthest key u can w/ ur left pinky",
+            Name.RightFoot => "hold the farthest key u can w/ ur thumb",
             _ => null,
         };
     }

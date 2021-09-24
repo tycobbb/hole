@@ -69,24 +69,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "LeftFoot",
-                    "type": "Button",
-                    "id": "d8ac4c30-6d89-4adf-9cd0-f0ca775fb4f0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "RightFoot",
-                    "type": "Button",
-                    "id": "f77d5ea7-095c-4a38-ae80-598efd328c55",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "LeftHand",
                     "type": "Button",
                     "id": "5a02d607-0ac6-47de-aa9d-16649fd44a83",
@@ -99,6 +81,24 @@
                     "name": "RightHand",
                     "type": "Button",
                     "id": "c43a68dd-3d55-4ff9-9503-bab064901705",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftFoot",
+                    "type": "Button",
+                    "id": "d8ac4c30-6d89-4adf-9cd0-f0ca775fb4f0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightFoot",
+                    "type": "Button",
+                    "id": "f77d5ea7-095c-4a38-ae80-598efd328c55",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -284,50 +284,6 @@
                 },
                 {
                     "name": "",
-                    "id": "139f6631-f153-4754-afa4-9672bdfafa53",
-                    "path": "<Keyboard>/3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LeftHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "28745342-377b-49ad-b250-bd61cabc1f48",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LeftHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "824aa949-02ba-49db-ae40-cd55a3ce21fb",
-                    "path": "<Keyboard>/9",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RightHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d3f76685-e403-4a0a-b8e7-98f97af6a152",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RightHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "57d4c5a0-fb6a-4a92-8e08-2f6c6b89e169",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -400,6 +356,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "RightFoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "824aa949-02ba-49db-ae40-cd55a3ce21fb",
+                    "path": "<Keyboard>/9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d3f76685-e403-4a0a-b8e7-98f97af6a152",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "139f6631-f153-4754-afa4-9672bdfafa53",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "28745342-377b-49ad-b250-bd61cabc1f48",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

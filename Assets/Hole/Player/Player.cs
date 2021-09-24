@@ -1,74 +1,59 @@
+using System;
+using System.Linq;
 using Hertzole.GoldPlayer;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// the player
 public class Player: MonoBehaviour {
-    // -- statics --
+    // -- constants --
+    /// the value when no limb is selected
+    const int kLimbNone = -1;
+
     /// the wall layer
-    int sWallLayer = -1;
+    static int sWallLayer = -1;
+
+    // -- deps --
+    /// the shared prompt ui
+    Prompt mPrompt;
 
     // -- config --
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
-    // -- nodes --
+    // -- c/nodes
     /// the player's root transform
-    Transform mRoot;
+    [SerializeField] Transform mRoot;
 
     /// the player's viewpoint
-    Transform mView;
+    [SerializeField] Transform mView;
 
     /// the player's physics body
-    Rigidbody mBody;
+    [SerializeField] Rigidbody mBody;
 
-    /// the player controller
-    CharacterController mCharacter;
+    /// the gold player controller
+    [SerializeField] GoldPlayerController mGpc;
 
-    /// the player controller
-    GoldPlayerController mController;
-
-    /// the player's left foot
-    Limb mLeftFoot;
-
-    /// the player's right foot
-    Limb mRightFoot;
-
-    /// the player's left hand
-    Limb mLeftHand;
-
-    /// the player's right hand
-    Limb mRightHand;
-
-    // -- inputs --
-    /// the bind limbs action
-    InputAction mBindLimbs;
+    /// the player's limbs in binding order
+    [SerializeField] Limb[] mLimbs;
 
     // -- props --
+    /// if the player is currently climbing
+    bool mIsClimbing = false;
+
     /// the limb being bound
-    Limb mBinding;
+    int mCurrentLimb = kLimbNone;
+
+    /// the bind limbs action
+    InputAction mBindLimbs;
 
     /// a shared buffer for raycast hits
     readonly RaycastHit[] mHits = new RaycastHit[1];
 
     // -- lifecycle --
     void Awake() {
-        // get node dependencies
-        var t = transform;
-        mRoot = t;
-        mView = t.Find("Body/Head/View");
-
-        // get body
-        var tb = t.Find("Body");
-        mBody = tb.GetComponent<Rigidbody>();
-        mCharacter = tb.GetComponent<CharacterController>();
-        mController = tb.GetComponent<GoldPlayerController>();
-
-        // get limbs
-        mLeftHand = t.Find("Limbs/LeftHand").GetComponent<Limb>();
-        mRightHand = t.Find("Limbs/RightHand").GetComponent<Limb>();
-        mLeftFoot = t.Find("Limbs/LeftFoot").GetComponent<Limb>();
-        mRightFoot = t.Find("Limbs/RightFoot").GetComponent<Limb>();
+        // get deps
+        mPrompt = Prompt.Get;
 
         // bind input events
         mBindLimbs = mInputs.FindAction("BindLimbs");
@@ -89,28 +74,23 @@ public class Player: MonoBehaviour {
     }
 
     void Update() {
-        // if we finished binding the current limb, bind the next one
-        if (mBinding != null && mBinding.IsJustPressed()) {
-            BindNextLimb();
+        // if we bound the current limb, attach it
+        var curr = FindCurrentLimb();
+        if (curr != null && curr.IsJustPressed()) {
+            AttachCurrentLimb();
         }
 
-        // attach body to wall
-        if (mLeftFoot.IsJustPressed()) {
-            // cast for a wall
-            var nHits = Physics.RaycastNonAlloc(
-                mLeftFoot.position,
-                mRoot.forward,
-                mHits,
-                1.0f,
-                1 << sWallLayer
-            );
-
-            // bind the inputs if we hit
-            if (nHits != 0) {
-                SetClimbing(true);
-                var hit = mHits[0];
-                mLeftFoot.position = hit.point;
+        // update every limb
+        var nLimbsAttached = 0;
+        foreach (var limb in mLimbs) {
+            if (limb.IsPressed()) {
+                nLimbsAttached += 1;
             }
+        }
+
+        // start climbing once every limb is on the wall
+        if (!mIsClimbing && nLimbsAttached == mLimbs.Length) {
+            Climb();
         }
     }
 
@@ -141,42 +121,74 @@ public class Player: MonoBehaviour {
         BindNextLimb();
     }
 
-    /// binds the next limb in the sequence
-    void BindNextLimb() {
-        // find a limb to bind, if any
-        var limb = FindNextLimb();
-        if (limb == null) {
+    /// attach the current limb to the wall
+    void AttachCurrentLimb() {
+        var limb = FindCurrentLimb();
+
+        // cast for a wall
+        var nHits = Physics.RaycastNonAlloc(
+            limb.Position,
+            mRoot.forward,
+            mHits,
+            2.0f,
+            1 << sWallLayer
+        );
+
+        if (nHits == 0) {
             return;
         }
 
-        // bind its input
-        limb.Bind();
+        // attach to the wall
+        limb.Position = mHits[0].point;
+
+        // bind the next limb
+        BindNextLimb();
+    }
+
+    /// binds the next limb in the sequence
+    void BindNextLimb() {
+        // update the index of the current limb
+        var next = mCurrentLimb + 1;
+        if (next >= mLimbs.Length) {
+            next = kLimbNone;
+        }
+
+        mCurrentLimb = next;
+
+        // and bind it, if it exists
+        var limb = FindCurrentLimb();
+        if (limb != null) {
+            limb.Bind();
+        }
+    }
+
+    /// start climbing
+    void Climb() {
+        SetClimbing(true);
+
+        // hide and instructional text
+        mPrompt.Hide();
     }
 
     /// configure character for climbing or no
     void SetClimbing(bool isClimbing) {
-        mCharacter.enabled = !isClimbing;
-        mController.enabled = !isClimbing;
+        mIsClimbing = isClimbing;
+
+        // update components
+        mGpc.enabled = !isClimbing;
+        mGpc.Controller.enabled = !isClimbing;
         mBody.isKinematic = !isClimbing;
         mBody.detectCollisions = isClimbing;
     }
 
     // -- queries --
-    /// finds the next limb to bind
-    Limb FindNextLimb() {
-        var curr = mBinding;
-
-        if (curr == null) {
-            return mLeftFoot;
-        } else if (curr == mLeftFoot) {
-            return mRightFoot;
-        } else if (curr == mRightFoot) {
-            return mLeftHand;
-        } else if (curr == mLeftHand) {
-            return mRightHand;
-        } else { // mRightHand
+    /// find the current limb, if any
+    Limb FindCurrentLimb() {
+        if (mCurrentLimb == kLimbNone || mCurrentLimb >= mLimbs.Length) {
             return null;
         }
+
+        return mLimbs[mCurrentLimb];
     }
 
     // -- events --
