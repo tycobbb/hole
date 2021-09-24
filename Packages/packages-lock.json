@@ -89,13 +89,6 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "se.hertzole.gold-player": {
-      "version": "https://github.com/Hertzole/gold-player.git#package",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "eef1158b7db9a52b569ffc9b0cf09a5e9ca1a6ec"
-    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

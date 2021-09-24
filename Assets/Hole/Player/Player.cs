@@ -31,15 +31,12 @@ public class Player: MonoBehaviour {
     /// the player's physics body
     [SerializeField] Rigidbody mBody;
 
-    /// the gold player controller
-    [SerializeField] GoldPlayerController mGpc;
-
     /// the player's limbs in binding order
     [SerializeField] Limb[] mLimbs;
 
     // -- props --
     /// if the player is currently climbing
-    bool mIsClimbing = false;
+    bool mIsClimbing;
 
     /// the limb being bound
     int mCurrentLimb = kLimbNone;
@@ -175,8 +172,6 @@ public class Player: MonoBehaviour {
         mIsClimbing = isClimbing;
 
         // update components
-        mGpc.enabled = !isClimbing;
-        mGpc.Controller.enabled = !isClimbing;
         mBody.isKinematic = !isClimbing;
         mBody.detectCollisions = isClimbing;
     }
