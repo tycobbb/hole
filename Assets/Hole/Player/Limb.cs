@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,7 +22,13 @@ public class Limb: MonoBehaviour {
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
+    /// the speed it animates into position
+    [SerializeField] float mAnimSpeed = 2.0f;
+
     // -- c/nodes
+    /// the limb's root transform
+    [SerializeField] Transform mRoot;
+
     /// the limb's rigidbody
     [SerializeField] Rigidbody mBody;
 
@@ -34,6 +39,9 @@ public class Limb: MonoBehaviour {
     /// the grab action for this limb
     InputAction mGrab;
 
+    /// the position to animate to smoothly
+    Vector3 mPosition;
+
     // -- lifecycle --
     void Awake() {
         // get deps
@@ -41,6 +49,11 @@ public class Limb: MonoBehaviour {
 
         // set props
         mGrab = mInputs.FindAction(FindActionName());
+    }
+
+    void Start() {
+        // store current position
+        mPosition = mRoot.position;
     }
 
     void Update() {
@@ -51,17 +64,17 @@ public class Limb: MonoBehaviour {
 
         // keep the limb pinned if unbound or unpressed
         mBody.isKinematic = IsPinned();
+
+        // move smoothly
+        mRoot.position = Vector3.Lerp(
+            mRoot.position,
+            mPosition,
+            Time.deltaTime * mAnimSpeed
+        );
     }
 
     void OnDisable() {
         mGrab.Disable();
-    }
-
-    // -- props(hot) --
-    /// the limb's transform position
-    public Vector3 Position {
-        get => transform.position;
-        set => transform.position = value;
     }
 
     // -- commands --
@@ -73,7 +86,23 @@ public class Limb: MonoBehaviour {
         mGrab.Enable();
     }
 
+    /// snaps the limb to the position immediately
+    public void SnapTo(Vector3 pos) {
+        MoveTo(pos);
+        mRoot.position = pos;
+    }
+
+    /// moves the limb to the position smoothly
+    public void MoveTo(Vector3 pos) {
+        mPosition = pos;
+    }
+
     // -- queries --
+    /// the limb's transform position
+    public Vector3 Position {
+        get => mRoot.position;
+    }
+
     /// if the limb was just pressed
     public bool IsJustPressed() {
         return mGrab.WasPerformedThisFrame();

@@ -77,18 +77,24 @@ public class Player: MonoBehaviour {
         // update every limb
         var nContacts = 0;
         foreach (var limb in mLimbs) {
-            if (limb.IsJustPressed()) {
-                TryGrab(limb);
-            }
-
+            // count contacts
             if (limb.IsPressed()) {
                 nContacts += 1;
+            }
+
+            // grab on the first frame
+            if (limb.IsJustPressed()) {
+                if (!mIsClimbing) {
+                    TryGrab(limb);
+                } else {
+                    TryClimb(limb);
+                }
             }
         }
 
         // start climbing once every limb is on the wall
-        if (ShouldClimb(nContacts)) {
-            Climb();
+        if (ShouldStartClimb(nContacts)) {
+            StartClimb();
         }
 
         // fall if more than one limb is off the wall
@@ -156,27 +162,34 @@ public class Player: MonoBehaviour {
 
     /// try to grab a wall with the limb
     bool TryGrab(Limb limb) {
-        // cast for a wall
-        var nHits = Physics.RaycastNonAlloc(
-            limb.Position,
-            mRoot.forward,
-            mHits,
-            5.0f,
-            1 << sWallLayer
-        );
-
-        if (nHits == 0) {
+        // find the contact point
+        var hit = FindWallHit(limb);
+        if (hit == null) {
             return false;
         }
 
         // attach to the wall
-        limb.Position = mHits[0].point;
+        limb.MoveTo(hit.Value.point);
 
         return true;
     }
 
+    /// climb a little higher up with the limb
+    void TryClimb(Limb limb) {
+        // find the contact point
+        var hit = FindWallHit(limb);
+        if (hit == null) {
+            return;
+        }
+
+        // attach to the wall, but a little higher
+        var p = hit.Value.point;
+        p.y += 1.0f;
+        limb.MoveTo(p);
+    }
+
     /// start climbing
-    void Climb() {
+    void StartClimb() {
         SetClimbing(true);
 
         // hide any instructional text
@@ -206,8 +219,26 @@ public class Player: MonoBehaviour {
         return mLimbs[mCurrentLimb];
     }
 
+    /// casts for a wall hit from the limb
+    RaycastHit? FindWallHit(Limb limb) {
+        // cast for a wall
+        var nHits = Physics.RaycastNonAlloc(
+            limb.Position,
+            mRoot.forward,
+            mHits,
+            5.0f,
+            1 << sWallLayer
+        );
+
+        if (nHits == 0) {
+            return null;
+        }
+
+        return mHits[0];
+    }
+
     /// if the player should start a climb
-    bool ShouldClimb(int nContacts) {
+    bool ShouldStartClimb(int nContacts) {
         // climb once all limbs are in contact
         return !mIsClimbing && nContacts == mLimbs.Length;
     }

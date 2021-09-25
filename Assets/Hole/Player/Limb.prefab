@@ -50,6 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mName: 0
   mInputs: {fileID: -944628639613478452, guid: c290be556fe3b4b4ebf7b4bcebc0db91, type: 3}
+  mAnimSpeed: 4.5
+  mRoot: {fileID: 4593938709559848531}
   mBody: {fileID: 6331205057258325897}
 --- !u!33 &7119833581081053583
 MeshFilter:
