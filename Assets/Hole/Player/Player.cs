@@ -75,20 +75,25 @@ public class Player: MonoBehaviour {
         }
 
         // update every limb
-        var nLimbsAttached = 0;
+        var nContacts = 0;
         foreach (var limb in mLimbs) {
             if (limb.IsJustPressed()) {
                 TryGrab(limb);
             }
 
             if (limb.IsPressed()) {
-                nLimbsAttached += 1;
+                nContacts += 1;
             }
         }
 
         // start climbing once every limb is on the wall
-        if (!mIsClimbing && nLimbsAttached == mLimbs.Length) {
+        if (ShouldClimb(nContacts)) {
             Climb();
+        }
+
+        // fall if more than one limb is off the wall
+        if (ShouldFall(nContacts)) {
+            Fall();
         }
     }
 
@@ -174,17 +179,21 @@ public class Player: MonoBehaviour {
     void Climb() {
         SetClimbing(true);
 
-        // hide and instructional text
+        // hide any instructional text
         mPrompt.Hide();
     }
 
-    /// configure character for climbing or no
+    /// start falling
+    void Fall() {
+        SetClimbing(false);
+    }
+
+    /// configure character for climbing or not
     void SetClimbing(bool isClimbing) {
         mIsClimbing = isClimbing;
 
-        // update components
+        // ignore physics unless climbing
         mBody.isKinematic = !isClimbing;
-        mBody.detectCollisions = isClimbing;
     }
 
     // -- queries --
@@ -195,6 +204,18 @@ public class Player: MonoBehaviour {
         }
 
         return mLimbs[mCurrentLimb];
+    }
+
+    /// if the player should start a climb
+    bool ShouldClimb(int nContacts) {
+        // climb once all limbs are in contact
+        return !mIsClimbing && nContacts == mLimbs.Length;
+    }
+
+    /// if the player should fall from a climb
+    bool ShouldFall(int nContacts) {
+        // fall if more than one contact is missing
+        return mIsClimbing && nContacts < mLimbs.Length - 1;
     }
 
     // -- events --
