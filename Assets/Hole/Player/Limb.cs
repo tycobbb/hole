@@ -47,6 +47,11 @@ public class Limb: MonoBehaviour {
 
         // set props
         mGrab = mInputs.FindAction(FindActionName());
+
+        // remove the existing binding if it has one (on reset)
+        if (mGrab.bindings.Count == 1) {
+            mGrab.ChangeBinding(0).Erase();
+        }
     }
 
     void Start() {
