@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -89,7 +90,7 @@ public class Player: MonoBehaviour {
         // if we bound the current limb, attach it
         var curr = FindCurrentLimb();
         if (curr != null && curr.IsJustPressed()) {
-            FinishBind();
+            TryFinishBind();
         }
 
         // update every limb
@@ -175,24 +176,34 @@ public class Player: MonoBehaviour {
 
         mCurrentLimb = next;
 
-        // and bind it, if it exists
+        // if the next limb exists
         var limb = FindCurrentLimb();
-        if (limb != null) {
-            limb.Bind();
+        if (limb == null) {
+            return;
         }
+
+        // excluding any key already used
+        var exclusions = new string[mCurrentLimb];
+        for (var i = 0; i < mCurrentLimb; i++) {
+            exclusions[i] = mLimbs[i].FindControlPath();
+        }
+
+        // bind its input
+        limb.Bind(exclusions);
     }
 
     /// grab the wall with the current limb and bind the next one
-    void FinishBind() {
+    void TryFinishBind() {
         var limb = FindCurrentLimb();
 
-        // grab the wall
+        // try to grab the wall
         var attached = TryGrab(limb);
-
-        // bind the next limb if successful
-        if (attached) {
-            BindNextLimb();
+        if (!attached) {
+            return;
         }
+
+        // finish binding this limb and move on to the next one
+        BindNextLimb();
     }
 
     /// try to grab a wall with the limb
@@ -246,8 +257,6 @@ public class Player: MonoBehaviour {
     /// configure character for climbing or not
     void SetState(State state) {
         mState = state;
-
-        Debug.Log($"change state to {mState}");
 
         // ignore physics while binding
         mBody.isKinematic = state == State.Grounded;

@@ -1,6 +1,7 @@
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 /// one of the player's limbs
 public class Limb: MonoBehaviour {
@@ -43,15 +44,11 @@ public class Limb: MonoBehaviour {
     /// the position to animate to smoothly
     Vector3 mPosition;
 
-    /// if the grab has been used
-    bool mHasGrabbed;
-
     /// if the limb is pinned externally
     bool mIsPinned;
 
     /// the grab action for this limb
     InputAction mGrab;
-
 
     // -- lifecycle --
     void Awake() {
@@ -68,11 +65,6 @@ public class Limb: MonoBehaviour {
     }
 
     void Update() {
-        // track first grab
-        if (!mHasGrabbed && mGrab.WasPressedThisFrame()) {
-            mHasGrabbed = true;
-        }
-
         // check if pinned
         var isPinned = IsPinned;
 
@@ -95,11 +87,32 @@ public class Limb: MonoBehaviour {
 
     // -- commands --
     /// show prompt and bind this limb's input
-    public void Bind() {
+    public void Bind(string[] exclusions = null) {
+        // show the prompt
         mPrompt.Show(FindPromptText());
 
-        // enable the grab
-        mGrab.Enable();
+        // bind the grab to the next key held for 0.3s
+        var rebind = mGrab
+            .PerformInteractiveRebinding()
+            .WithRebindAddingNewBinding()
+            .WithControlsExcluding("Mouse")
+            .WithControlsExcluding("Keyboard/anyKey")
+            .OnMatchWaitForAnother(0.1f);
+
+        // exclude any extra paths
+        if (exclusions != null) {
+            foreach (var path in exclusions) {
+                rebind = rebind.WithControlsExcluding(path);
+            }
+        }
+
+        // start the rebind
+        rebind
+            .Start()
+            .OnComplete((op) => {
+                op.Dispose();
+                mGrab.Enable();
+            });
     }
 
     /// moves the limb to the position smoothly
@@ -110,7 +123,7 @@ public class Limb: MonoBehaviour {
     // -- props(hot) --
     /// if it's pinned in place
     public bool IsPinned {
-        get => !mHasGrabbed || mIsPinned;
+        get => mIsPinned;
         set => mIsPinned = value;
     }
 
@@ -127,7 +140,37 @@ public class Limb: MonoBehaviour {
 
     /// if the limb is pressed
     public bool IsPressed() {
-        return mGrab.IsPressed();
+        // if the action is pressed
+        if (mGrab.IsPressed()) {
+            return true;
+        }
+
+        // or the control is pressed (feel like we shouldn't need this but
+        // initial input binding breaks otherwise
+        var control = FindControl();
+        if (control != null && control.IsPressed()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// finds the grab control path, if any
+    public string FindControlPath() {
+        if (!mGrab.enabled) {
+            return null;
+        }
+
+        return FindControl()?.path;
+    }
+
+    /// finds the current grab control, if any
+    InputControl FindControl() {
+        if (mGrab.controls.Count == 0) {
+            return null;
+        }
+
+        return mGrab.controls[0];
     }
 
     /// find action name for this limb
@@ -144,10 +187,10 @@ public class Limb: MonoBehaviour {
     /// find the prompt text for this limb
     string FindPromptText() {
         return (mName) switch {
-            Name.LeftHand => "hold 3 w/ ur ring finger",
-            Name.RightHand => "hold the farthest key u can w/ ur index finger",
-            Name.LeftFoot => "hold the farthest key u can w/ ur left pinky",
-            Name.RightFoot => "hold the farthest key u can w/ ur thumb",
+            Name.LeftHand => "tap & hold 3 w/ ur ring finger",
+            Name.RightHand => "tap & hold the farthest key u can w/ ur index finger",
+            Name.LeftFoot => "tap & hold the farthest key u can w/ ur left pinky",
+            Name.RightFoot => "tap & hold the farthest key u can w/ ur thumb",
             _ => null,
         };
     }

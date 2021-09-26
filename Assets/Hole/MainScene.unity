@@ -538,10 +538,6 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.14999998
       objectReference: {fileID: 0}
-    - target: {fileID: 3248227984896201352, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
-      propertyPath: m_Mass
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5747678607882244381, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_Name
       value: Player
