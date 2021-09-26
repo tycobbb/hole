@@ -23,15 +23,10 @@ public class Prompt: MonoBehaviour {
     /// set the text and show prompt if necessary
     public void Show(string msg) {
         mLabel.text = msg;
-
-        if (!mLabel.IsActive()) {
-            mLabel.SetActive(true);
-        }
     }
 
     /// hide the prompt
     public void Hide() {
         mLabel.text = "";
-        mLabel.SetActive(false);
     }
 }

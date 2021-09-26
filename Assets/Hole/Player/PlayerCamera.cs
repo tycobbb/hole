@@ -36,7 +36,7 @@ public class PlayerCamera: MonoBehaviour {
 
         // reduce sensitivity in webgl
         #if !UNITY_EDITOR && UNITY_WEBGL
-        mLookSensitivity *= 0.25f;
+        mSensitivity *= 0.25f;
         #endif
     }
 

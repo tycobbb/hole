@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +24,13 @@ public class Score: MonoBehaviour {
     bool mIsContactTimeTicking = false;
 
     // -- lifecycle --
+    void Awake() {
+        #if !UNITY_EDITOR && UNITY_WEBGL
+        mLabel.fontSize *= 2.5f;
+        mLabel.rectTransform.anchoredPosition *= 2.5f;
+        #endif
+    }
+
     void Update() {
         if (mIsContactTimeTicking) {
             AddContactTime();
@@ -61,6 +67,6 @@ public class Score: MonoBehaviour {
     /// show the current score
     void ShowScore() {
         var score = (int)mContactTime + (int)(mMaxHeight * 10.0f);
-        mLabel.SetText(score.ToString());
+        mLabel.text = score.ToString();
     }
 }
