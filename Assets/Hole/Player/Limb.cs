@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,17 +19,8 @@ public class Limb: MonoBehaviour {
     /// the name of the limb
     [SerializeField] Name mName;
 
-    /// the speed it animates into position
-    [SerializeField] float mMoveSpeed = 2.0f;
-
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
-
-    /// the spring joint
-    [SerializeField] SpringJoint mSpring;
-
-    /// the fixed joint
-    [SerializeField] FixedJoint mFixed;
 
     // -- c/nodes
     /// the limb's root transform
@@ -65,19 +54,12 @@ public class Limb: MonoBehaviour {
     }
 
     void Update() {
-        // check if pinned
-        var isPinned = IsPinned;
+        mBody.isKinematic = IsPinned;
+    }
 
-        // if so, make the body kinematic
-        mBody.isKinematic = isPinned;
-
-        // and animate the position
-        if (isPinned) {
-            mRoot.position = Vector3.Lerp(
-                mRoot.position,
-                mPosition,
-                Time.deltaTime * mMoveSpeed
-            );
+    void FixedUpdate() {
+        if (IsPinned) {
+            mRoot.position = mPosition;
         }
     }
 

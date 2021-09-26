@@ -536,7 +536,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2808928301645002620, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 0.14999998
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 5747678607882244381, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_Name
@@ -587,24 +587,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6356021117721824436, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
-      propertyPath: m_ConnectedAnchor.y
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6356021117721824436, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 0.14999998
-      objectReference: {fileID: 0}
-    - target: {fileID: 7006377578412997367, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
-      propertyPath: m_ConnectedAnchor.x
-      value: -0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7006377578412997367, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
-      propertyPath: m_ConnectedAnchor.y
-      value: 0.4
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 7006377578412997367, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 0.14999998
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 7882884149005944973, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.y
@@ -612,7 +600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7882884149005944973, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 0.14999998
+      value: 0.75
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}

@@ -51,8 +51,6 @@ MonoBehaviour:
   mName: 0
   mMoveSpeed: 2
   mInputs: {fileID: -944628639613478452, guid: c290be556fe3b4b4ebf7b4bcebc0db91, type: 3}
-  mSpring: {fileID: 0}
-  mFixed: {fileID: 0}
   mRoot: {fileID: 4593938709559848531}
   mBody: {fileID: 6331205057258325897}
 --- !u!33 &7119833581081053583
@@ -125,13 +123,13 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6447973708825880900}
   serializedVersion: 2
-  m_Mass: 0.01
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 120
   m_CollisionDetection: 0
 --- !u!145 &5434147264938741440
 SpringJoint:
@@ -142,12 +140,12 @@ SpringJoint:
   m_GameObject: {fileID: 6447973708825880900}
   m_ConnectedBody: {fileID: 0}
   m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0, z: -0.5}
+  m_Anchor: {x: 0, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.4, y: 0.4, z: 0.65}
+  m_ConnectedAnchor: {x: -0.4, y: 0.4, z: 0.75}
   serializedVersion: 2
   m_Spring: 10
-  m_Damper: 0.2
+  m_Damper: 1
   m_MinDistance: 0
   m_MaxDistance: 0
   m_Tolerance: 0.025
