@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -54,7 +53,7 @@ public class Player: MonoBehaviour {
     State mState = State.Grounded;
 
     /// the rotation to animate to, if any
-    Quaternion? mRotation = null;
+    Quaternion? mRotation;
 
     /// the limb being bound
     int mCurrentLimb = kLimbNone;
@@ -138,9 +137,13 @@ public class Player: MonoBehaviour {
             Fall();
         }
 
+        // land once the ground is hit
         if (ShouldLand()) {
             Land();
         }
+
+        // update score
+        mScore.RecordContacts(nContacts);
     }
 
     // -- commands --
@@ -243,7 +246,7 @@ public class Player: MonoBehaviour {
         limb.MoveTo(pos);
 
         // record the score
-        mScore.Record((int)(pos.y * 10.0f));
+        mScore.RecordHeight(pos.y);
     }
 
     /// start climbing
