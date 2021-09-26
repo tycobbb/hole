@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Body: MonoBehaviour {
+public class PlayerCamera: MonoBehaviour {
     // -- config --
     /// the look limits in degrees
     [SerializeField] Vector2 mLimits = new Vector2(30.0f, 75.0f);

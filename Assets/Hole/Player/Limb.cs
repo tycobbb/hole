@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 /// one of the player's limbs
 public class Limb: MonoBehaviour {
@@ -19,11 +20,17 @@ public class Limb: MonoBehaviour {
     /// the name of the limb
     [SerializeField] Name mName;
 
+    /// the speed it animates into position
+    [SerializeField] float mMoveSpeed = 2.0f;
+
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
-    /// the speed it animates into position
-    [SerializeField] float mAnimSpeed = 2.0f;
+    /// the spring joint
+    [SerializeField] SpringJoint mSpring;
+
+    /// the fixed joint
+    [SerializeField] FixedJoint mFixed;
 
     // -- c/nodes
     /// the limb's root transform
@@ -33,14 +40,18 @@ public class Limb: MonoBehaviour {
     [SerializeField] Rigidbody mBody;
 
     // -- props --
+    /// the position to animate to smoothly
+    Vector3 mPosition;
+
     /// if the grab has been used
     bool mHasGrabbed;
+
+    /// if the limb is pinned externally
+    bool mIsPinned;
 
     /// the grab action for this limb
     InputAction mGrab;
 
-    /// the position to animate to smoothly
-    Vector3 mPosition;
 
     // -- lifecycle --
     void Awake() {
@@ -62,15 +73,20 @@ public class Limb: MonoBehaviour {
             mHasGrabbed = true;
         }
 
-        // keep the limb pinned if unbound or unpressed
-        mBody.isKinematic = IsPinned();
+        // check if pinned
+        var isPinned = IsPinned;
 
-        // move smoothly
-        mRoot.position = Vector3.Lerp(
-            mRoot.position,
-            mPosition,
-            Time.deltaTime * mAnimSpeed
-        );
+        // if so, make the body kinematic
+        mBody.isKinematic = isPinned;
+
+        // and animate the position
+        if (isPinned) {
+            mRoot.position = Vector3.Lerp(
+                mRoot.position,
+                mPosition,
+                Time.deltaTime * mMoveSpeed
+            );
+        }
     }
 
     void OnDisable() {
@@ -86,19 +102,20 @@ public class Limb: MonoBehaviour {
         mGrab.Enable();
     }
 
-    /// snaps the limb to the position immediately
-    public void SnapTo(Vector3 pos) {
-        MoveTo(pos);
-        mRoot.position = pos;
-    }
-
     /// moves the limb to the position smoothly
     public void MoveTo(Vector3 pos) {
         mPosition = pos;
     }
 
+    // -- props(hot) --
+    /// if it's pinned in place
+    public bool IsPinned {
+        get => !mHasGrabbed || mIsPinned;
+        set => mIsPinned = value;
+    }
+
     // -- queries --
-    /// the limb's transform position
+    /// its transform position
     public Vector3 Position {
         get => mRoot.position;
     }
@@ -111,16 +128,6 @@ public class Limb: MonoBehaviour {
     /// if the limb is pressed
     public bool IsPressed() {
         return mGrab.IsPressed();
-    }
-
-    /// if the limb was just released
-    public bool IsJustReleased() {
-        return mGrab.WasReleasedThisFrame();
-    }
-
-    /// if it's pinned in place
-    bool IsPinned() {
-        return !mHasGrabbed || mGrab.IsPressed();
     }
 
     /// find action name for this limb

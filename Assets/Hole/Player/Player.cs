@@ -10,11 +10,25 @@ public class Player: MonoBehaviour {
     /// the wall layer
     static int sWallLayer = -1;
 
+    /// the floor layer
+    static int sFloorLayer = -1;
+
+    // -- types --
+    /// the player's current state
+    enum State {
+        Grounded,
+        Climbing,
+        Falling,
+    }
+
     // -- deps --
     /// the shared prompt ui
     Prompt mPrompt;
 
     // -- config --
+    /// the speed the rotation animates
+    [SerializeField] float mRotateSpeed = 2.0f;
+
     /// the input asset
     [SerializeField] InputActionAsset mInputs;
 
@@ -32,8 +46,11 @@ public class Player: MonoBehaviour {
     [SerializeField] Limb[] mLimbs;
 
     // -- props --
-    /// if the player is currently climbing
-    bool mIsClimbing;
+    /// the current player state
+    State mState = State.Grounded;
+
+    /// the rotation to animate to, if any
+    Quaternion? mRotation = null;
 
     /// the limb being bound
     int mCurrentLimb = kLimbNone;
@@ -56,6 +73,7 @@ public class Player: MonoBehaviour {
         // set statics
         if (sWallLayer == -1) {
             sWallLayer = LayerMask.NameToLayer("Wall");
+            sFloorLayer = LayerMask.NameToLayer("Floor");
         }
     }
 
@@ -64,7 +82,7 @@ public class Player: MonoBehaviour {
     }
 
     void Start() {
-        SetClimbing(false);
+        SetState(mState);
     }
 
     void Update() {
@@ -77,18 +95,31 @@ public class Player: MonoBehaviour {
         // update every limb
         var nContacts = 0;
         foreach (var limb in mLimbs) {
-            // count contacts
-            if (limb.IsPressed()) {
+            // count limbs grabbing
+            var isGrabbing = !IsFalling && limb.IsPressed();
+            if (isGrabbing) {
                 nContacts += 1;
             }
 
-            // grab on the first frame
+            // pin it in place when grabbing
+            limb.IsPinned = isGrabbing;
+
+            // when just pressed try to grab/climb
             if (limb.IsJustPressed()) {
-                if (!mIsClimbing) {
+                if (IsGrounded) {
                     TryGrab(limb);
                 } else {
                     TryClimb(limb);
                 }
+            }
+
+            // rotate smoothly
+            if (mRotation != null) {
+                mRoot.rotation = Quaternion.Lerp(
+                    mRoot.rotation,
+                    mRotation.Value,
+                    Time.deltaTime * mRotateSpeed
+                );
             }
         }
 
@@ -100,6 +131,10 @@ public class Player: MonoBehaviour {
         // fall if more than one limb is off the wall
         if (ShouldFall(nContacts)) {
             Fall();
+        }
+
+        if (ShouldLand()) {
+            Land();
         }
     }
 
@@ -190,7 +225,7 @@ public class Player: MonoBehaviour {
 
     /// start climbing
     void StartClimb() {
-        SetClimbing(true);
+        SetState(State.Climbing);
 
         // hide any instructional text
         mPrompt.Hide();
@@ -198,18 +233,42 @@ public class Player: MonoBehaviour {
 
     /// start falling
     void Fall() {
-        SetClimbing(false);
+        mRotation = Quaternion.AngleAxis(-90.0f, Vector3.right);
+        SetState(State.Falling);
+    }
+
+    /// land on the ground after falling
+    void Land() {
+        mRotation = Quaternion.identity;
+        SetState(State.Grounded);
     }
 
     /// configure character for climbing or not
-    void SetClimbing(bool isClimbing) {
-        mIsClimbing = isClimbing;
+    void SetState(State state) {
+        mState = state;
 
-        // ignore physics unless climbing
-        mBody.isKinematic = !isClimbing;
+        Debug.Log($"change state to {mState}");
+
+        // ignore physics while binding
+        mBody.isKinematic = state == State.Grounded;
     }
 
     // -- queries --
+    /// if the player is idle and ready to grab
+    bool IsGrounded {
+        get => mState == State.Grounded;
+    }
+
+    /// if the player is on the wall and climbing
+    bool IsClimbing {
+        get => mState == State.Climbing;
+    }
+
+    /// if the player is falling
+    bool IsFalling {
+        get => mState == State.Falling;
+    }
+
     /// find the current limb, if any
     Limb FindCurrentLimb() {
         if (mCurrentLimb == kLimbNone || mCurrentLimb >= mLimbs.Length) {
@@ -240,13 +299,32 @@ public class Player: MonoBehaviour {
     /// if the player should start a climb
     bool ShouldStartClimb(int nContacts) {
         // climb once all limbs are in contact
-        return !mIsClimbing && nContacts == mLimbs.Length;
+        return IsGrounded && nContacts == mLimbs.Length;
     }
 
     /// if the player should fall from a climb
     bool ShouldFall(int nContacts) {
         // fall if more than one contact is missing
-        return mIsClimbing && nContacts < mLimbs.Length - 1;
+        return IsClimbing && nContacts < mLimbs.Length - 1;
+    }
+
+    /// if the player should land this frame
+    bool ShouldLand() {
+        // make sure the player is falling
+        if (!IsFalling) {
+            return false;
+        }
+
+        // cast downwards for the floor
+        var nHits = Physics.RaycastNonAlloc(
+            mRoot.position,
+            Vector3.down,
+            mHits,
+            1.0f,
+            1 << sFloorLayer
+        );
+
+        return nHits != 0;
     }
 
     // -- events --

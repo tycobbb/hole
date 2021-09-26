@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 422246228}
   - component: {fileID: 422246227}
   - component: {fileID: 422246226}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -538,6 +538,10 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.14999998
       objectReference: {fileID: 0}
+    - target: {fileID: 3248227984896201352, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5747678607882244381, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_Name
       value: Player
@@ -613,10 +617,6 @@ PrefabInstance:
     - target: {fileID: 7882884149005944973, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
       propertyPath: m_ConnectedAnchor.z
       value: 0.14999998
-      objectReference: {fileID: 0}
-    - target: {fileID: 8894591291656728979, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}
-      propertyPath: m_Mass
-      value: 0.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22feb7c58afe148d090f0d656c9dfe7c, type: 3}

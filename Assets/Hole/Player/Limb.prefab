@@ -49,8 +49,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mName: 0
+  mMoveSpeed: 2
   mInputs: {fileID: -944628639613478452, guid: c290be556fe3b4b4ebf7b4bcebc0db91, type: 3}
-  mAnimSpeed: 4.5
+  mSpring: {fileID: 0}
+  mFixed: {fileID: 0}
   mRoot: {fileID: 4593938709559848531}
   mBody: {fileID: 6331205057258325897}
 --- !u!33 &7119833581081053583

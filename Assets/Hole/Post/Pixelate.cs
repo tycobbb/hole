@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [ExecuteAlways]
-[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(UnityEngine.Camera))]
 public class Pixelate: MonoBehaviour {
     // -- constants --
     static readonly int sDensityId = Shader.PropertyToID("_Density");
