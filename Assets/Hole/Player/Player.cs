@@ -23,6 +23,9 @@ public class Player: MonoBehaviour {
     }
 
     // -- deps --
+    /// the shared score ui
+    Score mScore;
+
     /// the shared prompt ui
     Prompt mPrompt;
 
@@ -65,6 +68,7 @@ public class Player: MonoBehaviour {
     // -- lifecycle --
     void Awake() {
         // get deps
+        mScore = Score.Get;
         mPrompt = Prompt.Get;
 
         // bind input events
@@ -215,7 +219,7 @@ public class Player: MonoBehaviour {
         }
 
         // attach to the wall
-        limb.MoveTo(hit.Value.point);
+        MoveLimb(limb, hit.Value.point);
 
         return true;
     }
@@ -231,7 +235,15 @@ public class Player: MonoBehaviour {
         // attach to the wall, but a little higher
         var p = hit.Value.point;
         p.y += 1.0f;
-        limb.MoveTo(p);
+        MoveLimb(limb, p);
+    }
+
+    /// move limb to point
+    void MoveLimb(Limb limb, Vector3 pos) {
+        limb.MoveTo(pos);
+
+        // record the score
+        mScore.Record((int)(pos.y * 10.0f));
     }
 
     /// start climbing

@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 /// one of the player's limbs
 public class Limb: MonoBehaviour {
     // -- types --
+    /// the type of limb
     enum Name {
         LeftFoot,
         RightFoot,
